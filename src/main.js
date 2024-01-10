@@ -14,7 +14,7 @@ let searchParams = new URLSearchParams({
     safesearch: true,
 });
 
-let url = 'https://pixabay.com/api/?${searchParams}';
+let url = `https://pixabay.com/api/?${searchParams}`;
 
 const galleryLightbox = new SimpleLightbox(".gallery a", {
     captionsData: "alt",
