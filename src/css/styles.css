@@ -22,7 +22,7 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
-/* 
+
 .loader {
   width: 48px;
   height: 48px;
@@ -42,4 +42,4 @@
   100% {
     transform: rotate(360deg);
   }
-} */
+}
