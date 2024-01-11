@@ -24,8 +24,8 @@ const galleryLightbox = new SimpleLightbox(".gallery a", {
     docClose: true,
 });
 
-function searchImages(url) {
-   return fetch(`https://pixabay.com/api/?${searchParams}`) 
+function searchImages(params) {
+   return fetch(`https://pixabay.com/api/?${params}`) 
     .then((response) => {
             if (!response.ok) {
                 throw new Error(response.status);
