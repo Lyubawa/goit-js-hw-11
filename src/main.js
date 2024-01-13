@@ -7,13 +7,7 @@ const form = document.querySelector(".form");
 const gallery = document.querySelector(".gallery");
 const loader = document.querySelector(".loader");
 
-let searchParams = {
-    key: "41672793-a8580f18ed6f224a15f8d2674",
-    q: "cat",
-    image_type: "photo",
-    orientation: "horizontal",
-    safesearch: true,
-};
+let searchQuery;
 
 const galleryLightbox = new SimpleLightbox(".gallery a", {
     captionsData: "alt",
@@ -24,15 +18,40 @@ const galleryLightbox = new SimpleLightbox(".gallery a", {
     docClose: true,
 });
 
-function searchImages(params) {
-   return fetch(`https://pixabay.com/api/?${params}`) 
+function searchImages(searchQuery) {
+    const searchParams = new URLSearchParams({
+    key: "41672793-a8580f18ed6f224a15f8d2674",
+    q: searchQuery,
+    image_type: "photo",
+    orientation: "horizontal",
+    safesearch: true,
+});
+   return fetch(`https://pixabay.com/api/?${searchParams}`) 
     .then((response) => {
             if (!response.ok) {
                 throw new Error(response.status);
             }
             return response.json();
         })
-   .then(({ hits, totalHits }) => {
+   
+    }
+
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    gallery.innerHTML = '';
+    loader.style.display = 'block';
+    searchQuery = event.target.elements.search.value.trim();
+    if (!searchQuery) {
+        iziToast.error({
+        title: "Error",
+        message: "Sorry, imput is empty!",
+        position: "topRight",
+        });
+        loader.style.display = 'none';
+        return;
+    }
+    searchImages(searchQuery)
+    .then(({ hits }) => {
             if (hits.length > 0) {
                 const renderImages = hits.reduce((html, hit) => {
                     return (
@@ -66,23 +85,13 @@ function searchImages(params) {
         messageColor: "#ffffff",
         titleColor: "#ffffff",
         iconColor: "#ffffff",
-        backgroundColor: "#B51B1B",
+        backgroundColor: "#EF4040",
     });
 }
         })        
         .catch((error) => console.log(error))
         .finally(() => {
-            loader.style.display = 'none'
+        loader.style.display = 'none';
         });
-    }
-
-form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    gallery.innerHTML = '';
-    loader.style.display = 'block';
-    const url = new URLSearchParams(searchParams);
-    searchParams.q = event.target.elements.search.value.trim();
-    searchImages(url);
     event.currentTarget.reset();
-
 })
