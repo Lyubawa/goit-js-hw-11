@@ -7,7 +7,7 @@ const form = document.querySelector(".form");
 const gallery = document.querySelector(".gallery");
 const loader = document.querySelector(".loader");
 
-let searchQuery;
+let query;
 
 const galleryLightbox = new SimpleLightbox(".gallery a", {
     captionsData: "alt",
@@ -39,20 +39,31 @@ function searchImages(searchQuery) {
 form.addEventListener("submit", (event) => {
     event.preventDefault();
     gallery.innerHTML = '';
-    loader.style.display = 'block';
-    searchQuery = event.target.elements.search.value.trim();
-    if (!searchQuery) {
+    loader.classList.remove('visible');
+    query = event.target.elements.search.value.trim();
+    if (!query) {
         iziToast.error({
         title: "Error",
         message: "Sorry, imput is empty!",
         position: "topRight",
         });
-        loader.style.display = 'none';
+        loader.classList.add('visible');
         return;
     }
-    searchImages(searchQuery)
+    searchImages(query)
     .then(({ hits }) => {
-            if (hits.length > 0) {
+        if (hits.length === 0) {
+            iziToast.error({
+        title: "Error",
+        message: "Sorry, there are no images matching your search query. Please try again!",
+        position: "topRight",
+        messageColor: "#ffffff",
+        titleColor: "#ffffff",
+        iconColor: "#ffffff",
+        backgroundColor: "#EF4040",
+            });   
+            return;
+            } 
                 const renderImages = hits.reduce((html, hit) => {
                     return (
                         html + `
@@ -76,22 +87,10 @@ form.addEventListener("submit", (event) => {
             }, "")
             gallery.innerHTML = renderImages;
             galleryLightbox.refresh();
-       
-    } else {
-    iziToast.error({
-        title: "Error",
-        message: "Sorry, there are no images matching your search query. Please try again!",
-        position: "topRight",
-        messageColor: "#ffffff",
-        titleColor: "#ffffff",
-        iconColor: "#ffffff",
-        backgroundColor: "#EF4040",
-    });
-}
-        })        
+               })        
         .catch((error) => console.log(error))
         .finally(() => {
-        loader.style.display = 'none';
+        loader.classList.add('visible');
         });
     event.currentTarget.reset();
 })
